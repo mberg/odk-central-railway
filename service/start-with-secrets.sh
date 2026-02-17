@@ -10,4 +10,5 @@ if [ -n "$ENKETO_API_KEY" ]; then
   echo -n "$ENKETO_API_KEY" > /etc/secrets/enketo-api-key
 fi
 
-exec /scripts/start-odk.sh
+cd /usr/odk
+exec wait-for-it "${DB_HOST:-postgres}:5432" --timeout=60 -- ./start-odk.sh

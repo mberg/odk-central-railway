@@ -146,23 +146,9 @@ server {
     try_files $uri @blank.html;
   }
 
-  # For that iframe to work, we'll need another path prefix (enketo-passthrough) under which we can
-  # reach Enketo — this one will not be intercepted.
+  # Enketo passthrough disabled - Enketo not deployed
   location ~ ^/(?:-|enketo-passthrough)(?:/|$) {
-    rewrite ^/enketo-passthrough(/.*)?$ /-$1 break;
-    proxy_pass http://enketo:8005;
-    proxy_redirect off;
-    proxy_set_header Host $host;
-    proxy_hide_header Vary;
-    proxy_hide_header Cache-Control;
-
-    # More lax CSP for enketo-express:
-    # Google Maps API: https://developers.google.com/maps/documentation/javascript/content-security-policy
-    # Use 'none' per directive instead of falling back to default-src to make CSP violation reports more specific
-    proxy_hide_header Content-Security-Policy-Report-Only;
-    add_header Content-Security-Policy-Report-Only "default-src 'none'; connect-src 'self' blob: https://maps.googleapis.com/ https://maps.google.com/ https://maps.gstatic.com/mapfiles/ https://fonts.gstatic.com/ https://fonts.googleapis.com/ https://translate.google.com https://translate.googleapis.com; font-src 'self' https://fonts.gstatic.com/; frame-src 'none'; img-src data: blob: jr: 'self' https://maps.google.com/maps/ https://maps.gstatic.com/mapfiles/ https://maps.googleapis.com/maps/ https://tile.openstreetmap.org/ https://translate.google.com; manifest-src 'none'; media-src blob: jr: 'self'; object-src 'none'; script-src 'unsafe-inline' 'self' https://maps.googleapis.com/maps/api/js/ https://maps.google.com/maps/ https://maps.google.com/maps-api-v3/api/js/; style-src 'unsafe-inline' 'self' https://fonts.googleapis.com/css; style-src-attr 'unsafe-inline'; report-uri /csp-report";
-
-    include /usr/share/odk/nginx/common-headers.conf;
+    return 503;
   }
   # End of Enketo Configuration.
 
