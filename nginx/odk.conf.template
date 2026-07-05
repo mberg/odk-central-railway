@@ -78,10 +78,11 @@ map $request_uri $central_frontend_csp {
 }
 
 server {
-  # Railway terminates TLS at its edge and forwards plain HTTP to this port.
-  # default_server so we serve regardless of which Host header arrives (Cloudflare
-  # rewrites Host to the working *.up.railway.app origin to dodge the custom-domain edge bug).
-  listen 8080 default_server;
+  # Railway terminates TLS at its edge and forwards plain HTTP to PORT (80), so listen
+  # there as the default_server — the base image also ships a stock `listen 80;
+  # server_name localhost` block, and being the default_server means we win for every
+  # real Host. server_name _ so we serve regardless of which Host arrives.
+  listen 80 default_server;
   server_name _;
 
   server_tokens off;
