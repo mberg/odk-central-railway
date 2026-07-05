@@ -1,9 +1,7 @@
 server {
-  listen 443 default_server ssl;
+  # Railway terminates TLS at its edge and forwards plain HTTP to this port.
+  listen 8080 default_server;
   server_tokens off;
-
-  ssl_certificate /etc/nginx/ssl/nginx.default.crt;
-  ssl_certificate_key /etc/nginx/ssl/nginx.default.key;
 
   return 421;
 }
@@ -88,19 +86,9 @@ map $request_uri $central_frontend_csp {
 }
 
 server {
-  listen 443 ssl;
-  http2 on;
+  # Railway terminates TLS at its edge and forwards plain HTTP to this port.
+  listen 8080;
   server_name ${DOMAIN};
-
-  ssl_certificate /etc/${SSL_TYPE}/live/${CERT_DOMAIN}/fullchain.pem;
-  ssl_certificate_key /etc/${SSL_TYPE}/live/${CERT_DOMAIN}/privkey.pem;
-  ssl_trusted_certificate /etc/${SSL_TYPE}/live/${CERT_DOMAIN}/fullchain.pem;
-
-  ssl_protocols TLSv1.2 TLSv1.3;
-  ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
-  ssl_prefer_server_ciphers off;
-
-  ssl_dhparam /etc/dh/nginx.pem;
 
   server_tokens off;
 
