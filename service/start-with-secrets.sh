@@ -6,9 +6,12 @@ set -e
 
 mkdir -p /etc/secrets
 
-if [ -n "$ENKETO_API_KEY" ]; then
-  echo -n "$ENKETO_API_KEY" > /etc/secrets/enketo-api-key
-fi
+# start-odk.sh unconditionally reads this file, so always create it. Empty is fine
+# since Enketo is not deployed in this Railway setup.
+echo -n "${ENKETO_API_KEY:-}" > /etc/secrets/enketo-api-key
 
 cd /usr/odk
-exec wait-for-it "${DB_HOST:-postgres}:5432" --timeout=60 -- ./start-odk.sh
+
+# No external wait-for-it: v2026.1.x's base image no longer ships it, and start-odk.sh
+# already waits for PostgreSQL to become connectable before running migrations.
+exec ./start-odk.sh
