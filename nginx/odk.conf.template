@@ -1,11 +1,3 @@
-server {
-  # Railway terminates TLS at its edge and forwards plain HTTP to this port.
-  listen 8080 default_server;
-  server_tokens off;
-
-  return 421;
-}
-
 map "$request_method::$uri$is_args$args" $cache_strategy {
   # general
   ~^(GET|HEAD)::/client-config.json$ "revalidate";
@@ -87,8 +79,10 @@ map $request_uri $central_frontend_csp {
 
 server {
   # Railway terminates TLS at its edge and forwards plain HTTP to this port.
-  listen 8080;
-  server_name ${DOMAIN};
+  # default_server so we serve regardless of which Host header arrives (Cloudflare
+  # rewrites Host to the working *.up.railway.app origin to dodge the custom-domain edge bug).
+  listen 8080 default_server;
+  server_name _;
 
   server_tokens off;
 
